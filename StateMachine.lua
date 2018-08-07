@@ -1,6 +1,7 @@
 ------------------------------------------------------
 -- a lua State Machine
 -- Weixu Zhu (Harry)
+-- version 2.0
 ------------------------------------------------------
 function tableCopy(x)
 	local image = {}
@@ -48,6 +49,8 @@ function StateMachine:create(option)
 	end
 	if type(option.transMethod) == "function" then
 		instance.transMethod = tableCopy(option.transMethod)
+	elseif type(option.method) == "function" then		-- legacy
+		instance.transMethod = tableCopy(option.method)
 	end
 	if type(option.leaveMethod) == "function" then
 		instance.leaveMethod = tableCopy(option.leaveMethod)
@@ -72,15 +75,14 @@ function StateMachine:init()
 end
 
 function StateMachine:run()
-	local count = 0
-	print("count = ",count)
 	local ret = self:step()
 	while ret == 1 do
-		a = io.read()
-		count = count + 1
-		print("count = ",count)
 		ret = self:step()
 	end
+end
+
+function StateMachine:stepSingle(para)		-- legacy mode
+	self:step(para)
 end
 
 function StateMachine:step(para)	
@@ -97,11 +99,8 @@ function StateMachine:step(para)
 			self.currentState = StateMachine.EXIT
 			return -1
 		end
-		print("nextState = ",self.nextState)
 		if self.substates[self.nextState] ~= nil then
 			self.currentState = self.substates[self.nextState]
-			print("current id = ",self.currentState.id)
-			print("current class = ",self.currentState.class)
 			self.currentState:init()
 			if self.currentState.enterMethod ~= nil then
 				self.currentState.enterMethod(self.data)
@@ -135,7 +134,6 @@ function StateMachine:step(para)
 		ret = self.currentState:step(para)
 	end
 	if ret == -1 then
-		print("onExit = ",self.currentState.onExit)
 		if self.currentState.onExit ~= nil then
 			self.nextState = self.currentState.onExit
 			if self.currentState.leaveMethod ~= nil then
