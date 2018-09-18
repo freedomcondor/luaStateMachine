@@ -1,7 +1,10 @@
 ------------------------------------------------------
 -- a lua State Machine
 -- Weixu Zhu (Harry)
--- version 2.0
+-- version 2.1
+-- 		-- added: method can access: father data,  self data, step para
+-- version 2.2
+-- 		-- added: CLASSSTATEMACHINE = true
 ------------------------------------------------------
 function tableCopy(x)
 	local image = {}
@@ -13,7 +16,7 @@ function tableCopy(x)
 	return image
 end
 ------------------------------------------------------
-local StateMachine = {class = "CLASSSTATEMACHINE"}
+local StateMachine = {CLASSSTATEMACHINE = true}
 StateMachine.__index = StateMachine
 
 StateMachine.INIT = {class = "CLASSFLAG",id = "INIT"}	-- flag constant
@@ -103,7 +106,7 @@ function StateMachine:step(para)
 			self.currentState = self.substates[self.nextState]
 			self.currentState:init()
 			if self.currentState.enterMethod ~= nil then
-				self.currentState.enterMethod(self.data)
+				self.currentState.enterMethod(self.data, self.currentState.data, para)
 			end
 		end
 	end
@@ -112,11 +115,11 @@ function StateMachine:step(para)
 	self.nextState = nil
 	local retNext = nil
 	if self.currentState.transMethod ~= nil then
-		retNext = self.currentState.transMethod(self.data)
+		retNext = self.currentState.transMethod(self.data, self.currentState.data, para)
 	end
 	if retNext ~= nil then
 		if self.currentState.leaveMethod ~= nil then
-			self.currentState.leaveMethod(self.data)
+			self.currentState.leaveMethod(self.data, self.currentState.data, para)
 		end
 		self.nextState = retNext
 		if retNext == "EXIT" then
@@ -137,7 +140,7 @@ function StateMachine:step(para)
 		if self.currentState.onExit ~= nil then
 			self.nextState = self.currentState.onExit
 			if self.currentState.leaveMethod ~= nil then
-				self.currentState.leaveMethod(self.data)
+				self.currentState.leaveMethod(self.data, self.currentState.data, para)
 			end
 			if self.nextState == "EXIT" then 
 				return -1 
