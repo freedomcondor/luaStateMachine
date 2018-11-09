@@ -12,6 +12,7 @@ local a = State:new{
 			enterMethod = function(data)
 				data.i = 5
 				print("i am enter Method of a")
+				return 1	-- jump to next step for trans
 			end,
 			transMethod = function(data)
 				data.i = data.i - 1
@@ -75,8 +76,8 @@ local a = State:new{
 			end,
 			transMethod = function()
 				print("i am trans Method of c")
-				--return "EXIT"
-				return "a"
+				return "EXIT"
+				--return "a"
 			end,
 			leaveMethod = function()
 				print("i am leave Method of c")

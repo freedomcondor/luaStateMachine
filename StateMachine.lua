@@ -5,6 +5,9 @@
 -- 		-- added: method can access: father data,  self data, step para
 -- version 2.2
 -- 		-- added: CLASSSTATEMACHINE = true
+-- version 2.3
+-- 		-- added: enterMethod return 1 for jumping a step for transMethod check
+-- 		-- changed: in step(), if no substates, return -1 instead of 1
 ------------------------------------------------------
 function tableCopy(x)
 	local image = {}
@@ -92,10 +95,11 @@ function StateMachine:step(para)
 -- return 1 means ongoing, return -1 means finish
 	-- if I don't have substate, joking, return -1
 	if self.substates == nil then
-		return 1
+		return -1
 	end
 
 	-- check nextState
+	-- self.nextState is the cue, if nil means the State stays, skip enterMethod
 	if self.nextState ~= nil then
 		if self.nextState == "EXIT" then
 			self.nextState = nil
@@ -106,7 +110,13 @@ function StateMachine:step(para)
 			self.currentState = self.substates[self.nextState]
 			self.currentState:init()
 			if self.currentState.enterMethod ~= nil then
-				self.currentState.enterMethod(self.data, self.currentState.data, para)
+				local retEnter = nil
+				retEnter = self.currentState.enterMethod(self.data, self.currentState.data, para)
+				-- if enterMethod return 1, means jump to next step for transMethod
+				if retEnter == 1 then	
+					self.nextState = nil
+					return 1
+				end
 			end
 		end
 	end
