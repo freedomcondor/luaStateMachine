@@ -1,6 +1,7 @@
 ------------------------------------------------------
 -- a lua State Machine
 -- Weixu Zhu (Harry)
+-- 		zhuweixu_harry@126.com
 -- version 2.1
 -- 		-- added: method can access: father data,  self data, step para
 -- version 2.2
