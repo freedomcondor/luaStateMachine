@@ -64,7 +64,11 @@ end
 function BehaviourTree.Sequence:run()
 	local ret = self.lastReturn
 	if self.lastReturn == "running" then
-		ret = self[self.current]:run()
+		if type(self[self.current].run) == "function" then
+			ret = self[self.current]:run()
+		else 
+			ret = false
+		end
 	end
 	while ret == true do
 		self.current = self.current + 1
@@ -108,7 +112,11 @@ end
 function BehaviourTree.Selector:run()
 	local ret = self.lastReturn
 	if self.lastReturn == "running" then
-		ret = self[self.current]:run()
+		if type(self[self.current].run) == "function" then
+			ret = self[self.current]:run()
+		else 
+			ret = false
+		end
 	end
 	while ret == false do
 		self.current = self.current + 1

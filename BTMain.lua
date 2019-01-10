@@ -7,7 +7,7 @@ local a = BT.Sequence:new{
 	id = "theBTtest",
 	BT.Sequence:new{
 		id = "Sequence",
-		BT.Condition:new{ run = function()
+		BT:new{ run = function()
 			return true
 		end,},
 
